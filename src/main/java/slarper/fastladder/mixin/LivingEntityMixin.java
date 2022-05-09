@@ -24,7 +24,7 @@ public abstract class LivingEntityMixin{
             if (((LivingEntityAccessor)entity).getJumping()){
                 // The speed's unit is block per tick. For example, 0.30 is 0.3 block/tick == 6 block/second
                 // Normal speed on ladder is y=0.15
-                entity.move(type, new Vec3d(original.x, 0.40D, original.z));
+                entity.move(type, new Vec3d(original.x, 0.30D, original.z));
             } else {
                 entity.move(type, original);
             }
