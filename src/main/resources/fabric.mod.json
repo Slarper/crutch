@@ -24,7 +24,8 @@
   "mixins": [
     "notenoughrepair.mixins.json",
     "fastladder.mixins.json",
-    "hidearmor.mixins.json"
+    "hidearmor.mixins.json",
+    "piglinrespect.mixins.json"
   ],
 
   "depends": {
