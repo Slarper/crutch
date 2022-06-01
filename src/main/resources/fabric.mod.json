@@ -19,7 +19,8 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "slarper.notenoughwither.NotEnoughWither"
+      "slarper.notenoughwither.NotEnoughWither",
+      "slarper.cucurbita.Cucurbita"
     ]
   },
   "mixins": [
