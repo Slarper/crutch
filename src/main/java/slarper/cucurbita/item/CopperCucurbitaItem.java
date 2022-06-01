@@ -7,8 +7,11 @@ import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.world.World;
+import slarper.cucurbita.Sounds;
 
 public class CopperCucurbitaItem extends Item {
     public CopperCucurbitaItem(Settings settings) {
@@ -31,6 +34,19 @@ public class CopperCucurbitaItem extends Item {
             entity.saveSelfNbt(cucurbita.getOrCreateSubNbt(EntityType.ENTITY_TAG_KEY));
 
             user.setStackInHand(hand,cucurbita);
+
+            // play sound
+            World world = user.getWorld();
+            if (!world.isClient) {
+                world.playSound(
+                        null, // Player - if non-null, will play sound for every nearby player *except* the specified player
+                        entity.getBlockPos(), // The position of where the sound will come from
+                        Sounds.OPEN_BOTTLE_EVENT, // The sound that will play
+                        SoundCategory.PLAYERS, // This determines which of the volume sliders affect this sound
+                        1f, //Volume multiplier, 1 is normal, 0.5 is half volume, etc
+                        1f // Pitch multiplier, 1 is normal, 0.5 is half pitch, etc
+                );
+            }
         }
 
 
