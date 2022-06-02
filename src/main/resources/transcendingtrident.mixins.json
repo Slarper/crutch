@@ -4,7 +4,9 @@
   "package": "slarper.transcendingtrident.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "EntityMixin"
+    "EntityMixin",
+    "LightningRodBlockMixin",
+    "TridentEntityMixin"
   ],
   "client": [
   ],
