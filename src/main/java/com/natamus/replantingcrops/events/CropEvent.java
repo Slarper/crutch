@@ -17,16 +17,14 @@ package com.natamus.replantingcrops.events;
 import com.natamus.replantingcrops.config.ConfigHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.CocoaBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.HoeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -36,7 +34,7 @@ import java.util.HashMap;
 public class CropEvent {
 	private static final HashMap<BlockPos, Item> checkReplant = new HashMap<>();
 	// cocoa's blockstate has a FACING property; so can't use the defaultState (FACING=NORTH) directly
-	private static final HashMap<BlockPos, BlockState> cocoaStates = new HashMap<>();
+	private static final HashMap<BlockPos, BlockState> cropStates = new HashMap<>();
 	
 	public static boolean onHarvest(World world, PlayerEntity player, BlockPos harvestPos, BlockState state) {
 		if (world.isClient()) {
@@ -64,7 +62,7 @@ public class CropEvent {
 		
 		Block block = state.getBlock();
 		
-		if (block.equals(Blocks.WHEAT)) {
+/*		if (block.equals(Blocks.WHEAT)) {
 			checkReplant.put(harvestPos, Items.WHEAT_SEEDS);
 		}
 		else if (block.equals(Blocks.CARROTS)) {
@@ -80,12 +78,22 @@ public class CropEvent {
 			checkReplant.put(harvestPos, Items.NETHER_WART);
 		}
 		else if (block.equals(Blocks.COCOA)) {
-			cocoaStates.put(harvestPos, state);
+			cropStates.put(harvestPos, state);
 			checkReplant.put(harvestPos, Items.COCOA_BEANS);
 		}
 		else {
 			return true;
+		}*/
+		if (ConfigHandler.seedCropPairs.containsValue(block)){
+			checkReplant.put(harvestPos, ConfigHandler.seedCropPairs.inverse().get(block));
+			if (ConfigHandler.cropsWithMoreStates.containsKey(block)){
+				cropStates.put(harvestPos, state);
+			}
+		} else {
+			return true;
 		}
+
+
 		
 		if (!player.isCreative()) {
 			player.getStackInHand(hand).damage(1, player.getRandom(), (ServerPlayerEntity) player);
@@ -110,7 +118,7 @@ public class CropEvent {
 
 		ItemStack itemstack = itemEntity.getStack();
 		Item item = itemstack.getItem();
-		if (item.equals(Items.WHEAT_SEEDS)) {
+/*		if (item.equals(Items.WHEAT_SEEDS)) {
 			world.setBlockState(itemPos, Blocks.WHEAT.getDefaultState());
 		}
 		else if (item.equals(Items.CARROT)) {
@@ -126,14 +134,31 @@ public class CropEvent {
 			world.setBlockState(itemPos, Blocks.NETHER_WART.getDefaultState());
 		}
 		else if (item.equals(Items.COCOA_BEANS)) {
-			if (!cocoaStates.containsKey(itemPos)) {
+			if (!cropStates.containsKey(itemPos)) {
 				checkReplant.remove(itemPos);
 				return;
 			}
-			world.setBlockState(itemPos, cocoaStates.get(itemPos).with(CocoaBlock.AGE, 0));
-			cocoaStates.remove(itemPos);
+			world.setBlockState(itemPos, cropStates.get(itemPos).with(CocoaBlock.AGE, 0));
+			cropStates.remove(itemPos);
 		}
 		else {
+			return;
+		}*/
+		if (ConfigHandler.seedCropPairs.containsKey(item)){
+			Block block = ConfigHandler.seedCropPairs.get(item);
+			if (ConfigHandler.cropsWithMoreStates.containsKey(block)){
+				if (!cropStates.containsKey(itemPos)) {
+					checkReplant.remove(itemPos);
+					return;
+				}
+				IntProperty age = ConfigHandler.cropsWithMoreStates.get(block);
+				world.setBlockState(itemPos, cropStates.get(itemPos).with(age, 0));
+				cropStates.remove(itemPos);
+			} else {
+				assert block != null;
+				world.setBlockState(itemPos, block.getDefaultState());
+			}
+		} else {
 			return;
 		}
 		

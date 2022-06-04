@@ -20,6 +20,8 @@ import com.natamus.replantingcrops.events.CropEvent;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.CocoaBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
 
@@ -27,6 +29,9 @@ public class Main implements ModInitializer {
 	@Override
 	public void onInitialize() { 
 		ConfigHandler.setup();
+
+		ConfigHandler.cropsWithMoreStates.put(Blocks.COCOA, CocoaBlock.AGE);
+
 
 		registerEvents();
 	}
