@@ -35,6 +35,7 @@ import java.util.HashMap;
 
 public class CropEvent {
 	private static final HashMap<BlockPos, Item> checkReplant = new HashMap<>();
+	// cocoa's blockstate has a FACING property; so can't use the defaultState (FACING=NORTH) directly
 	private static final HashMap<BlockPos, BlockState> cocoaStates = new HashMap<>();
 	
 	public static boolean onHarvest(World world, PlayerEntity player, BlockPos harvestPos, BlockState state) {
