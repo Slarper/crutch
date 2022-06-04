@@ -30,7 +30,9 @@ public class Main implements ModInitializer {
 	public void onInitialize() { 
 		ConfigHandler.setup();
 
-		ConfigHandler.cropsWithMoreStates.put(Blocks.COCOA, CocoaBlock.AGE);
+/*
+		ConfigHandler.cropAgePairs.put(Blocks.COCOA, CocoaBlock.AGE);
+*/
 
 
 		registerEvents();

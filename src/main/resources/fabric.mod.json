@@ -30,7 +30,8 @@
     "hidearmor.mixins.json",
     "piglinrespect.mixins.json",
     "transcendingtrident.mixins.json",
-    "shieldblockelytra.mixins.json"
+    "shieldblockelytra.mixins.json",
+    "replantingcrops.mixins.json"
   ],
 
   "depends": {

@@ -86,7 +86,7 @@ public class CropEvent {
 		}*/
 		if (ConfigHandler.seedCropPairs.containsValue(block)){
 			checkReplant.put(harvestPos, ConfigHandler.seedCropPairs.inverse().get(block));
-			if (ConfigHandler.cropsWithMoreStates.containsKey(block)){
+			if (ConfigHandler.cropAgePairs.containsKey(block)){
 				cropStates.put(harvestPos, state);
 			}
 		} else {
@@ -146,12 +146,12 @@ public class CropEvent {
 		}*/
 		if (ConfigHandler.seedCropPairs.containsKey(item)){
 			Block block = ConfigHandler.seedCropPairs.get(item);
-			if (ConfigHandler.cropsWithMoreStates.containsKey(block)){
+			if (ConfigHandler.cropAgePairs.containsKey(block)){
 				if (!cropStates.containsKey(itemPos)) {
 					checkReplant.remove(itemPos);
 					return;
 				}
-				IntProperty age = ConfigHandler.cropsWithMoreStates.get(block);
+				IntProperty age = ConfigHandler.cropAgePairs.get(block);
 				world.setBlockState(itemPos, cropStates.get(itemPos).with(age, 0));
 				cropStates.remove(itemPos);
 			} else {

@@ -15,6 +15,9 @@
 package com.natamus.replantingcrops.config;
 
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.natamus.replantingcrops.mixin.StateAccessor;
 import com.natamus.replantingcrops.util.Reference;
 import io.github.fablabsmc.fablabs.api.fiber.v1.exception.ValueDeserializationException;
 import io.github.fablabsmc.fablabs.api.fiber.v1.schema.type.derived.ConfigTypes;
@@ -27,12 +30,14 @@ import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.state.property.IntProperty;
+import net.minecraft.state.property.Property;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ConfigHandler { 
@@ -45,7 +50,8 @@ public class ConfigHandler {
 	// different crop has different age object, so you can only modify it by java code instead of data-driven.
 	// the age object is in crop block class and Properties class.
 	// For add-on mod, call CropsWithMoreStates.put(xx,xx) in initialize().
-	public static HashMap<Block, IntProperty> cropsWithMoreStates = new HashMap<>();
+	public static HashMap<Block, IntProperty> cropAgePairs = new HashMap<>();
+	public static ArrayList<Block> cropsWithOtherStates = new ArrayList<>();
 
 	private static final ConfigTree CONFIG = ConfigTree.builder() 
 			.beginValue("mustHoldHoeForReplanting", ConfigTypes.BOOLEAN, true)
@@ -80,5 +86,19 @@ public class ConfigHandler {
 		seedCropPairs.put(Items.NETHER_WART,Blocks.NETHER_WART);
 		seedCropPairs.put(Items.COCOA_BEANS,Blocks.COCOA);
 
+		addCropsWithOtherStates(Blocks.COCOA);
+
+	}
+
+	public static void addCropsWithOtherStates(Block block){
+		ImmutableMap<Property<?>, Comparable<?>> entries = ((StateAccessor)block.getDefaultState()).getEntries();
+		ImmutableSet<Property<?>> properties = entries.keySet();
+		for(Property<?> property : properties){
+			if (property instanceof IntProperty && property.getName().equals("age")){
+				ConfigHandler.cropAgePairs.put(Blocks.COCOA, (IntProperty) property);
+				cropsWithOtherStates.add(block);
+				return;
+			}
+		}
 	}
 }

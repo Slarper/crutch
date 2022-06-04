@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.natamus.replantingcrops.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "StateAccessor"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
