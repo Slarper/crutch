@@ -34,7 +34,7 @@ public class CropConfigHandler {
         ImmutableSet<Property<?>> properties = entries.keySet();
         for(Property<?> property : properties){
             if (property instanceof IntProperty && property.getName().equals("age")){
-                cropAgePairs.put(Blocks.COCOA, (IntProperty) property);
+                cropAgePairs.put(block, (IntProperty) property);
                 cropsWithOtherProperties.add(block);
                 return;
             }
