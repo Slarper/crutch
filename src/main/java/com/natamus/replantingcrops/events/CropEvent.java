@@ -15,6 +15,7 @@
 package com.natamus.replantingcrops.events;
 
 import com.natamus.replantingcrops.config.ConfigHandler;
+import com.natamus.replantingcrops.config.CropConfigHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -61,32 +62,10 @@ public class CropEvent {
 		}
 		
 		Block block = state.getBlock();
-		
-/*		if (block.equals(Blocks.WHEAT)) {
-			checkReplant.put(harvestPos, Items.WHEAT_SEEDS);
-		}
-		else if (block.equals(Blocks.CARROTS)) {
-			checkReplant.put(harvestPos, Items.CARROT);
-		}
-		else if (block.equals(Blocks.POTATOES)) {
-			checkReplant.put(harvestPos, Items.POTATO);
-		}
-		else if (block.equals(Blocks.BEETROOTS)) {
-			checkReplant.put(harvestPos, Items.BEETROOT_SEEDS);
-		}
-		else if (block.equals(Blocks.NETHER_WART)) {
-			checkReplant.put(harvestPos, Items.NETHER_WART);
-		}
-		else if (block.equals(Blocks.COCOA)) {
-			cropStates.put(harvestPos, state);
-			checkReplant.put(harvestPos, Items.COCOA_BEANS);
-		}
-		else {
-			return true;
-		}*/
-		if (ConfigHandler.seedCropPairs.containsValue(block)){
-			checkReplant.put(harvestPos, ConfigHandler.seedCropPairs.inverse().get(block));
-			if (ConfigHandler.cropAgePairs.containsKey(block)){
+
+		if (CropConfigHandler.seedCropPairs.containsValue(block)){
+			checkReplant.put(harvestPos, CropConfigHandler.seedCropPairs.inverse().get(block));
+			if (CropConfigHandler.cropAgePairs.containsKey(block)){
 				cropStates.put(harvestPos, state);
 			}
 		} else {
@@ -118,40 +97,14 @@ public class CropEvent {
 
 		ItemStack itemstack = itemEntity.getStack();
 		Item item = itemstack.getItem();
-/*		if (item.equals(Items.WHEAT_SEEDS)) {
-			world.setBlockState(itemPos, Blocks.WHEAT.getDefaultState());
-		}
-		else if (item.equals(Items.CARROT)) {
-			world.setBlockState(itemPos, Blocks.CARROTS.getDefaultState());
-		}
-		else if (item.equals(Items.POTATO)) {
-			world.setBlockState(itemPos, Blocks.POTATOES.getDefaultState());
-		}
-		else if (item.equals(Items.BEETROOT_SEEDS)) {
-			world.setBlockState(itemPos, Blocks.BEETROOTS.getDefaultState());
-		}
-		else if (item.equals(Items.NETHER_WART)) {
-			world.setBlockState(itemPos, Blocks.NETHER_WART.getDefaultState());
-		}
-		else if (item.equals(Items.COCOA_BEANS)) {
-			if (!cropStates.containsKey(itemPos)) {
-				checkReplant.remove(itemPos);
-				return;
-			}
-			world.setBlockState(itemPos, cropStates.get(itemPos).with(CocoaBlock.AGE, 0));
-			cropStates.remove(itemPos);
-		}
-		else {
-			return;
-		}*/
-		if (ConfigHandler.seedCropPairs.containsKey(item)){
-			Block block = ConfigHandler.seedCropPairs.get(item);
-			if (ConfigHandler.cropAgePairs.containsKey(block)){
+		if (CropConfigHandler.seedCropPairs.containsKey(item)){
+			Block block = CropConfigHandler.seedCropPairs.get(item);
+			if (CropConfigHandler.cropAgePairs.containsKey(block)){
 				if (!cropStates.containsKey(itemPos)) {
 					checkReplant.remove(itemPos);
 					return;
 				}
-				IntProperty age = ConfigHandler.cropAgePairs.get(block);
+				IntProperty age = CropConfigHandler.cropAgePairs.get(block);
 				world.setBlockState(itemPos, cropStates.get(itemPos).with(age, 0));
 				cropStates.remove(itemPos);
 			} else {

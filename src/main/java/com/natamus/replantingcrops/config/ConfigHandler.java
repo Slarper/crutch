@@ -14,10 +14,6 @@
 
 package com.natamus.replantingcrops.config;
 
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.natamus.replantingcrops.mixin.StateAccessor;
 import com.natamus.replantingcrops.util.Reference;
 import io.github.fablabsmc.fablabs.api.fiber.v1.exception.ValueDeserializationException;
 import io.github.fablabsmc.fablabs.api.fiber.v1.schema.type.derived.ConfigTypes;
@@ -25,33 +21,15 @@ import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.FiberSerialization
 import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.JanksonValueSerializer;
 import io.github.fablabsmc.fablabs.api.fiber.v1.tree.ConfigTree;
 import io.github.fablabsmc.fablabs.api.fiber.v1.tree.PropertyMirror;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.state.property.IntProperty;
-import net.minecraft.state.property.Property;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ConfigHandler { 
 	public static PropertyMirror<Boolean> mustHoldHoeForReplanting = PropertyMirror.create(ConfigTypes.BOOLEAN);
-	// a Bidirectional Map of the seed - the crop block
-	public static HashBiMap<Item, Block> seedCropPairs = HashBiMap.create();
-	// for the crop who has state properties except age - like facing
-	// (e.g. cocoa has 2 state properties of facing and age).
-	// the value is age object
-	// different crop has different age object, so you can only modify it by java code instead of data-driven.
-	// the age object is in crop block class and Properties class.
-	// For add-on mod, call CropsWithMoreStates.put(xx,xx) in initialize().
-	public static HashMap<Block, IntProperty> cropAgePairs = new HashMap<>();
-	public static ArrayList<Block> cropsWithOtherStates = new ArrayList<>();
 
 	private static final ConfigTree CONFIG = ConfigTree.builder() 
 			.beginValue("mustHoldHoeForReplanting", ConfigTypes.BOOLEAN, true)
@@ -76,29 +54,6 @@ public class ConfigHandler {
 			FiberSerialization.deserialize(CONFIG, s, serializer);
 		} catch (IOException | ValueDeserializationException e) {
 			System.out.println("Error loading config");
-		}
-
-		// temporary; need configs in the future.
-		seedCropPairs.put(Items.WHEAT_SEEDS, Blocks.WHEAT);
-		seedCropPairs.put(Items.CARROT,Blocks.CARROTS);
-		seedCropPairs.put(Items.POTATO,Blocks.POTATOES);
-		seedCropPairs.put(Items.BEETROOT_SEEDS,Blocks.BEETROOTS);
-		seedCropPairs.put(Items.NETHER_WART,Blocks.NETHER_WART);
-		seedCropPairs.put(Items.COCOA_BEANS,Blocks.COCOA);
-
-		addCropsWithOtherStates(Blocks.COCOA);
-
-	}
-
-	public static void addCropsWithOtherStates(Block block){
-		ImmutableMap<Property<?>, Comparable<?>> entries = ((StateAccessor)block.getDefaultState()).getEntries();
-		ImmutableSet<Property<?>> properties = entries.keySet();
-		for(Property<?> property : properties){
-			if (property instanceof IntProperty && property.getName().equals("age")){
-				ConfigHandler.cropAgePairs.put(Blocks.COCOA, (IntProperty) property);
-				cropsWithOtherStates.add(block);
-				return;
-			}
 		}
 	}
 }
