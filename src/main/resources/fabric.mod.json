@@ -28,7 +28,8 @@
     "fastladder.mixins.json",
     "hidearmor.mixins.json",
     "piglinrespect.mixins.json",
-    "transcendingtrident.mixins.json"
+    "transcendingtrident.mixins.json",
+    "shieldblockelytra.mixins.json"
   ],
 
   "depends": {
