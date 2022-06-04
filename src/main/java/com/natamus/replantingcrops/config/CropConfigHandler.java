@@ -3,14 +3,26 @@ package com.natamus.replantingcrops.config;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 import com.natamus.replantingcrops.mixin.StateAccessor;
+import com.natamus.replantingcrops.util.Reference;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Property;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -28,28 +40,60 @@ public class CropConfigHandler {
     public static HashMap<Block, IntProperty> cropAgePairs = new HashMap<>();
     public static ArrayList<Block> cropsWithOtherProperties = new ArrayList<>();
 
+    public final static Gson GSON = new GsonBuilder()
+            .setPrettyPrinting()
+            .create();
+
+
     public static void registerCropsWithOtherProperties(Item item, Block block){
-        seedCropPairs.put(item,block);
         ImmutableMap<Property<?>, Comparable<?>> entries = ((StateAccessor)block.getDefaultState()).getEntries();
         ImmutableSet<Property<?>> properties = entries.keySet();
         for(Property<?> property : properties){
             if (property instanceof IntProperty && property.getName().equals("age")){
                 cropAgePairs.put(block, (IntProperty) property);
                 cropsWithOtherProperties.add(block);
+                seedCropPairs.put(item,block);
                 return;
             }
         }
     }
-    static  {
 
-
-        // temporary; need configs in the future.
-        seedCropPairs.put(Items.WHEAT_SEEDS, Blocks.WHEAT);
-        seedCropPairs.put(Items.CARROT,Blocks.CARROTS);
-        seedCropPairs.put(Items.POTATO,Blocks.POTATOES);
-        seedCropPairs.put(Items.BEETROOT_SEEDS,Blocks.BEETROOTS);
-        seedCropPairs.put(Items.NETHER_WART,Blocks.NETHER_WART);
-
-        registerCropsWithOtherProperties(Items.COCOA_BEANS, Blocks.COCOA);
+    public static Item getItemById(String id){
+        return Registry.ITEM.get(new Identifier(id));
     }
+
+    public static Block getBlockById(String id){
+        return Registry.BLOCK.get(new Identifier(id));
+    }
+
+    static  {
+        Path p = Paths.get("config", Reference.MOD_ID + ".crops" + ".json");
+        if (!Files.exists(p)){
+            String json = GSON.toJson(defaultCropConfigObject.getInstance());
+            try {
+                Files.writeString(p,json, StandardOpenOption.WRITE, StandardOpenOption.CREATE);
+            } catch (IOException e) {
+                Reference.LOGGER.error("Unable to write default config",e);
+            }
+        }
+
+        try (BufferedReader reader = Files.newBufferedReader(p)) {
+            ArrayList<SeedCropEntry> crops = GSON.fromJson(reader, CropConfigObject.class).crops;
+            for(SeedCropEntry entry:crops){
+                Item item = getItemById(entry.seed);
+                Block block = getBlockById(entry.block);
+                if (item == Items.AIR || block == Blocks.AIR){
+                    continue;
+                }
+                if(entry.withOtherPropertiesExceptAge){
+                    registerCropsWithOtherProperties(item, block);
+                } else {
+                    seedCropPairs.put(item, block);
+                }
+            }
+        } catch (IOException | JsonParseException e) {
+            Reference.LOGGER.error("Error loading config",e);
+        }
+    }
+
 }
