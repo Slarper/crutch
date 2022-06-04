@@ -20,7 +20,8 @@
   "entrypoints": {
     "main": [
       "slarper.notenoughwither.NotEnoughWither",
-      "slarper.cucurbita.Cucurbita"
+      "slarper.cucurbita.Cucurbita",
+      "com.natamus.replantingcrops.Main"
     ]
   },
   "mixins": [
