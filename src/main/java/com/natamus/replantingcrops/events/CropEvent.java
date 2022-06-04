@@ -34,10 +34,10 @@ import net.minecraft.world.World;
 import java.util.HashMap;
 
 public class CropEvent {
-	private static final HashMap<BlockPos, Item> checkreplant = new HashMap<>();
+	private static final HashMap<BlockPos, Item> checkReplant = new HashMap<>();
 	private static final HashMap<BlockPos, BlockState> cocoaStates = new HashMap<>();
 	
-	public static boolean onHarvest(World world, PlayerEntity player, BlockPos hpos, BlockState state) {
+	public static boolean onHarvest(World world, PlayerEntity player, BlockPos harvestPos, BlockState state) {
 		if (world.isClient()) {
 			return true;
 		}
@@ -64,23 +64,23 @@ public class CropEvent {
 		Block block = state.getBlock();
 		
 		if (block.equals(Blocks.WHEAT)) {
-			checkreplant.put(hpos, Items.WHEAT_SEEDS);
+			checkReplant.put(harvestPos, Items.WHEAT_SEEDS);
 		}
 		else if (block.equals(Blocks.CARROTS)) {
-			checkreplant.put(hpos, Items.CARROT);
+			checkReplant.put(harvestPos, Items.CARROT);
 		}
 		else if (block.equals(Blocks.POTATOES)) {
-			checkreplant.put(hpos, Items.POTATO);
+			checkReplant.put(harvestPos, Items.POTATO);
 		}
 		else if (block.equals(Blocks.BEETROOTS)) {
-			checkreplant.put(hpos, Items.BEETROOT_SEEDS);
+			checkReplant.put(harvestPos, Items.BEETROOT_SEEDS);
 		}
 		else if (block.equals(Blocks.NETHER_WART)) {
-			checkreplant.put(hpos, Items.NETHER_WART);
+			checkReplant.put(harvestPos, Items.NETHER_WART);
 		}
 		else if (block.equals(Blocks.COCOA)) {
-			cocoaStates.put(hpos, state);
-			checkreplant.put(hpos, Items.COCOA_BEANS);
+			cocoaStates.put(harvestPos, state);
+			checkReplant.put(harvestPos, Items.COCOA_BEANS);
 		}
 		else {
 			return true;
@@ -98,45 +98,45 @@ public class CropEvent {
 			return;
 		}
 		
-		if (!(entity instanceof ItemEntity itementity)) {
+		if (!(entity instanceof ItemEntity itemEntity)) {
 			return;
 		}
 		
-		BlockPos ipos = entity.getBlockPos();
-		if (!checkreplant.containsKey(ipos)) {
+		BlockPos itemPos = entity.getBlockPos();
+		if (!checkReplant.containsKey(itemPos)) {
 			return;
 		}
 
-		ItemStack itemstack = itementity.getStack();
+		ItemStack itemstack = itemEntity.getStack();
 		Item item = itemstack.getItem();
 		if (item.equals(Items.WHEAT_SEEDS)) {
-			world.setBlockState(ipos, Blocks.WHEAT.getDefaultState());
+			world.setBlockState(itemPos, Blocks.WHEAT.getDefaultState());
 		}
 		else if (item.equals(Items.CARROT)) {
-			world.setBlockState(ipos, Blocks.CARROTS.getDefaultState());
+			world.setBlockState(itemPos, Blocks.CARROTS.getDefaultState());
 		}
 		else if (item.equals(Items.POTATO)) {
-			world.setBlockState(ipos, Blocks.POTATOES.getDefaultState());
+			world.setBlockState(itemPos, Blocks.POTATOES.getDefaultState());
 		}
 		else if (item.equals(Items.BEETROOT_SEEDS)) {
-			world.setBlockState(ipos, Blocks.BEETROOTS.getDefaultState());
+			world.setBlockState(itemPos, Blocks.BEETROOTS.getDefaultState());
 		}
 		else if (item.equals(Items.NETHER_WART)) {
-			world.setBlockState(ipos, Blocks.NETHER_WART.getDefaultState());
+			world.setBlockState(itemPos, Blocks.NETHER_WART.getDefaultState());
 		}
 		else if (item.equals(Items.COCOA_BEANS)) {
-			if (!cocoaStates.containsKey(ipos)) {
-				checkreplant.remove(ipos);
+			if (!cocoaStates.containsKey(itemPos)) {
+				checkReplant.remove(itemPos);
 				return;
 			}
-			world.setBlockState(ipos, cocoaStates.get(ipos).with(CocoaBlock.AGE, 0));
-			cocoaStates.remove(ipos);
+			world.setBlockState(itemPos, cocoaStates.get(itemPos).with(CocoaBlock.AGE, 0));
+			cocoaStates.remove(itemPos);
 		}
 		else {
 			return;
 		}
 		
-		checkreplant.remove(ipos);
+		checkReplant.remove(itemPos);
 		
 		if (itemstack.getCount() > 1) {
 			itemstack.decrement(1);
