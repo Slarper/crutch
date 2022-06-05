@@ -31,7 +31,8 @@
     "piglinrespect.mixins.json",
     "transcendingtrident.mixins.json",
     "shieldblockelytra.mixins.json",
-    "replantingcrops.mixins.json"
+    "replantingcrops.mixins.json",
+    "cucurbita.mixins.json"
   ],
 
   "depends": {
