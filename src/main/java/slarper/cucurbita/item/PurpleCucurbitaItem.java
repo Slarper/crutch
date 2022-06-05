@@ -9,11 +9,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
+import slarper.cucurbita.Sounds;
 import slarper.cucurbita.mixin.EntityTypeAccessor;
 
 import java.util.Objects;
@@ -62,6 +64,14 @@ public class PurpleCucurbitaItem extends Item {
                 player.setStackInHand(context.getHand(),new ItemStack(Items.COPPER_CUCURBITA));
             }
             world.emitGameEvent(player, GameEvent.ENTITY_PLACE, blockPos);
+            world.playSound(
+                    null, // Player - if non-null, will play sound for every nearby player *except* the specified player
+                    entity.getBlockPos(), // The position of where the sound will come from
+                    Sounds.OPEN_BOTTLE_EVENT, // The sound that will play
+                    SoundCategory.PLAYERS, // This determines which of the volume sliders affect this sound
+                    1f, //Volume multiplier, 1 is normal, 0.5 is half volume, etc
+                    1f // Pitch multiplier, 1 is normal, 0.5 is half pitch, etc
+            );
             return ActionResult.CONSUME;
         }
     }
