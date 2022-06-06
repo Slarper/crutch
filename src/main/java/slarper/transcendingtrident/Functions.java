@@ -8,6 +8,9 @@ public class Functions {
     public static boolean isLightningRod(ItemStack stack){
         return stack.getItem() == Items.LIGHTNING_ROD;
     }
+    public static boolean isHoldingLightningRod(PlayerEntity player){
+        return isLightningRod(player.getOffHandStack()) || isLightningRod(player.getMainHandStack());
+    }
     public static boolean isRiptideItem(ItemStack stack){
         return stack.isIn(Reference.RIPTIDE_ITEMS);
     }

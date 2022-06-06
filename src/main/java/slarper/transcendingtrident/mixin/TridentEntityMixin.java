@@ -13,45 +13,43 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import slarper.transcendingtrident.Functions;
 
 @Mixin(TridentEntity.class)
 public class TridentEntityMixin {
-    @Inject(
+
+    @Redirect(
             method = "onEntityHit",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/entity/projectile/TridentEntity;playSound(Lnet/minecraft/sound/SoundEvent;FF)V"
-            ),
-            locals = LocalCapture.CAPTURE_FAILSOFT,
-            cancellable = true
+                    target = "Lnet/minecraft/world/World;isThundering()Z"
+            )
     )
-    private void spawnThunder(EntityHitResult entityHitResult, CallbackInfo ci, Entity entity, float f, Entity entity2, DamageSource damageSource, SoundEvent soundEvent, float g){
-        TridentEntity trident = (TridentEntity) (Object)this;
-        if (trident.world instanceof ServerWorld && !trident.world.isThundering() && trident.hasChanneling()) {
-            if (entity2 instanceof PlayerEntity owner){
-                if (
-                        Functions.isLightningRod(owner.getMainHandStack()) || Functions.isLightningRod(owner.getOffHandStack())
-                ){
-                    BlockPos blockPos = entity.getBlockPos();
-                    if (trident.world.isSkyVisible(blockPos)) {
-                        LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(trident.world);
-                        assert lightningEntity != null;
-                        lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos));
-                        lightningEntity.setChanneler(entity2 instanceof ServerPlayerEntity ? (ServerPlayerEntity)entity2 : null);
-                        trident.world.spawnEntity(lightningEntity);
-                        trident.playSound(SoundEvents.ITEM_TRIDENT_THUNDER, 5.0F, 1.0F);
-                        ci.cancel();
-                    }
-                }
-            }
-        }
+    private boolean alwaysTrue(World world){
+        return true;
     }
 
+    @Redirect(
+            method = "onEntityHit",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/entity/projectile/TridentEntity;hasChanneling()Z"
+            )
+    )
+    private boolean andIsThunderingOrIsHoldingRod(TridentEntity trident){
+        Entity owner = trident.getOwner();
+        if (owner instanceof PlayerEntity player){
+            return trident.hasChanneling() && (trident.world.isThundering() || Functions.isHoldingLightningRod(player));
+        } else {
+            return trident.hasChanneling() && trident.world.isThundering();
+        }
+    }
 
 }
