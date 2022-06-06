@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-import slarper.piglinrespect.PiglinRespectItemTags;
+import slarper.piglinrespect.Reference;
 
 import java.util.Iterator;
 
@@ -24,7 +24,7 @@ public class PiglinBrainMixin {
             locals = LocalCapture.CAPTURE_FAILSOFT
     )
     private static void isInTag(LivingEntity entity, CallbackInfoReturnable<Boolean> cir, Iterable<ItemStack> iterable, Iterator<ItemStack> var2, ItemStack itemStack){
-        if (itemStack.isIn(PiglinRespectItemTags.PIGLIN_RESPECT_ITEMS)){
+        if (itemStack.isIn(Reference.PIGLIN_RESPECT_ITEMS)){
             cir.setReturnValue(true);
         }
     }
