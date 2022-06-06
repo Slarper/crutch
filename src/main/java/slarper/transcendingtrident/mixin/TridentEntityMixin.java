@@ -10,7 +10,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Hand;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -37,7 +36,7 @@ public class TridentEntityMixin {
         if (trident.world instanceof ServerWorld && !trident.world.isThundering() && trident.hasChanneling()) {
             if (entity2 instanceof PlayerEntity owner){
                 if (
-                        Functions.isLightningRod(owner.getStackInHand(Hand.MAIN_HAND)) || Functions.isLightningRod(owner.getStackInHand(Hand.OFF_HAND))
+                        Functions.isLightningRod(owner.getMainHandStack()) || Functions.isLightningRod(owner.getOffHandStack())
                 ){
                     BlockPos blockPos = entity.getBlockPos();
                     if (trident.world.isSkyVisible(blockPos)) {
